@@ -1,2 +1,3 @@
 {"drug":"Metformin","disease":"Alzheimers","paths":[["Metformin","AMPK","Metabolic_Pathway","Alzheimers"]],"path_scores":[0.88]}
 {"drug":"Ibuprofen","disease":"Alzheimers","paths":[["Ibuprofen","COX2","Inflammation_Pathway","Alzheimers"]],"path_scores":[0.45]}
+

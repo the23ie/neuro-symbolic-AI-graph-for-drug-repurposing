@@ -1,0 +1,3 @@
+drug,disease,final_score,neural_score,best_path_score,symbolic_score,best_path,rule_target_in_pathway,rule_bbb_check,rule_toxicity_ok,rule_mechanism_consistent,rule_meta_path_score
+Metformin,Alzheimers,0.691,0.72,0.88,0.38,Metformin | AMPK | Metabolic_Pathway | Alzheimers,0.0,0.0,0.0,1.0,0.8999999999999999
+Ibuprofen,Alzheimers,0.37249999999999994,0.3,0.45,0.38,Ibuprofen | COX2 | Inflammation_Pathway | Alzheimers,0.0,0.0,0.0,1.0,0.8999999999999999
