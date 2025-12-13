@@ -1,0 +1,9 @@
+node_key,prefix,id,name,meta
+Drug:metformin,Drug,metformin,Metformin,"{'id': 'metformin', 'name': 'Metformin', 'smiles': '', 'source': 'DrugBank'}"
+Drug:ibuprofen,Drug,ibuprofen,Ibuprofen,"{'id': 'ibuprofen', 'name': 'Ibuprofen', 'smiles': '', 'source': 'DrugBank'}"
+Protein:ampk,Protein,ampk,ampk,"{'id': 'ampk', 'symbol': 'AMPK', 'uniprot': 'P12345', 'description': 'AMP-activated protein kinase'}"
+Protein:cox2,Protein,cox2,cox2,"{'id': 'cox2', 'symbol': 'COX2', 'uniprot': 'P23456', 'description': 'Cyclooxygenase-2'}"
+Pathway:metabolic_pathway,Pathway,metabolic_pathway,Metabolic_Pathway,"{'id': 'metabolic_pathway', 'name': 'Metabolic_Pathway', 'source': 'KEGG'}"
+Pathway:inflammation_pathway,Pathway,inflammation_pathway,Inflammation_Pathway,"{'id': 'inflammation_pathway', 'name': 'Inflammation_Pathway', 'source': 'Reactome'}"
+Disease:alzheimers,Disease,alzheimers,Alzheimers,"{'id': 'alzheimers', 'name': 'Alzheimers', 'doid': 'DOID:10652'}"
+Disease:type2_diabetes,Disease,type2_diabetes,Type_2_Diabetes,"{'id': 'type2_diabetes', 'name': 'Type_2_Diabetes', 'doid': 'DOID:9352'}"
