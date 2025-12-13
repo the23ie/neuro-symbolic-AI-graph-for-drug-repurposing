@@ -9,3 +9,16 @@ data/drkg/
 # Checkpoints
 outputs/
 saved_models/
+# Large datasets
+data/
+
+# Generated outputs
+deeppath_paths.txt
+
+# External repos / experiments
+minerva/
+minerva_code/
+
+# Python cache
+__pycache__/
+*.pyc
