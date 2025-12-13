@@ -1,0 +1,7 @@
+head,relation,tail
+Drug:metformin,inhibits,Protein:ampk
+Drug:ibuprofen,inhibits,Protein:cox2
+Protein:ampk,part_of,Pathway:metabolic_pathway
+Protein:cox2,part_of,Pathway:inflammation_pathway
+Pathway:metabolic_pathway,associated_with,Disease:alzheimers
+Pathway:inflammation_pathway,associated_with,Disease:alzheimers

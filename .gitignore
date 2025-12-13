@@ -1,0 +1,23 @@
+
+# ===== LARGE DATA / ARTIFACTS =====
+*.npy
+*.pt
+*.pth
+*.bin
+
+# DRKG & large graphs
+data/drkg/
+data/raw/
+data/layers/
+
+# Large outputs
+data/final_outputs/global_original_scores.csv
+
+# Logs
+*.log
+nohup.out
+
+# Python cache
+__pycache__/
+*.pyc
+
