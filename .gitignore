@@ -21,3 +21,8 @@ nohup.out
 __pycache__/
 *.pyc
 
+# Large neural artifacts (do not push again)
+data/global_scores.csv
+data/final_outputs/global_original_scores.csv
+artifacts/global_scores.csv
+*.npy
