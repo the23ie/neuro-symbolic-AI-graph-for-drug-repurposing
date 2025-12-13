@@ -1,0 +1,11 @@
+# Large DRKG files
+data/drkg/
+*.pkl
+*.npy
+
+# Logs
+*.log
+
+# Checkpoints
+outputs/
+saved_models/
