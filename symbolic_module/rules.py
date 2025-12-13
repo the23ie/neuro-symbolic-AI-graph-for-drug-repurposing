@@ -1,81 +1,86 @@
 # symbolic_module/rules.py
-"""
-Simple PoLo-style symbolic rules for Laptop 3.
-Each rule returns 0/1 (or 0..1) and we combine them into a symbolic_score.
-"""
 
-import pandas as pd
-from typing import List
+import re
 
-def load_drug_properties(path="data/drug_properties.csv"):
-    try:
-        df = pd.read_csv(path)
-        df = df.set_index("drug")
-        return df
-    except Exception:
-        # return empty df with expected columns
-        return pd.DataFrame(columns=["BBB","toxicity"])
+def rule_pathway_overlap(drug_pathways, disease_pathways):
+    """Boost if drug and disease share pathways."""
+    overlap = set(drug_pathways) & set(disease_pathways)
+    score = len(overlap) * 0.2   # weight is learnable later
+    explanation = f"Shared pathways: {', '.join(overlap)}" if overlap else "No shared pathways"
+    return score, explanation
 
-def load_pathway_genes(path="data/pathway_genes.csv"):
-    try:
-        df = pd.read_csv(path)
-        return set(df["gene"].astype(str).tolist())
-    except Exception:
-        return set()
 
-def target_in_pathway(path: List[str], pathway_genes:set) -> int:
-    """
-    Return 1 if any node in the path is a pathway gene.
-    """
-    for n in path:
-        if n in pathway_genes:
-            return 1
-    return 0
+def rule_target_in_disease_genes(drug_targets, disease_genes):
+    """Boost score if drug targets appear in disease gene list."""
+    hits = set(drug_targets) & set(disease_genes)
+    score = len(hits) * 0.3
+    explanation = f"Drug hits disease genes: {', '.join(hits)}" if hits else "No direct target hits"
+    return score, explanation
 
-def bbb_check(drug:str, drug_props: pd.DataFrame) -> float:
-    """
-    Binary BBB check. If property missing, return 0. For heuristics later, you can use MW/PSA.
-    """
-    if drug not in drug_props.index:
-        return 0.0
-    val = str(drug_props.loc[drug].get("BBB", "")).upper()
-    return 1.0 if val in ("YES","TRUE","1") else 0.0
 
-def toxicity_ok(drug:str, drug_props: pd.DataFrame) -> float:
-    """
-    Return 1 if toxicity not high, 0 if HIGH or unknown -> 0.5 for MEDIUM (if provided).
-    """
-    if drug not in drug_props.index:
-        return 0.0
-    tox = str(drug_props.loc[drug].get("toxicity", "")).upper()
-    if tox == "HIGH":
-        return 0.0
-    if tox == "MEDIUM":
-        return 0.5
-    if tox in ("LOW","NONE","0"):
-        return 1.0
-    # unknown -> conservative 0.5
-    return 0.5
+def rule_antagonistic_gene_interactions(drug_targets, opposite_genes):
+    """Penalty: Drug targets may worsen the disease."""
+    hits = set(drug_targets) & set(opposite_genes)
+    score = -0.4 * len(hits)
+    explanation = f"Antagonistic gene interactions: {', '.join(hits)}" if hits else "No harmful gene interactions"
+    return score, explanation
 
-def mechanism_consistent(path: List[str]) -> float:
-    """
-    Placeholder: returns 1.0 by default.
-    You can enhance to detect contradictions (e.g., drug activates protein known to worsen disease).
-    """
-    return 1.0
 
-def meta_path_score(path: List[str]) -> float:
+def rule_bbb_requirement(drug_properties, disease):
+    """Boost if drug crosses BBB for CNS diseases, penalize if not."""
+    needs_bbb = disease.lower() in ["alzheimer's", "parkinson's", "epilepsy"]
+    bbb_ok = drug_properties.get("bbb", False)
+
+    if needs_bbb and not bbb_ok:
+        return -0.5, "Disease requires BBB crossing but drug cannot cross"
+    if needs_bbb and bbb_ok:
+        return 0.3, "Drug crosses BBB"
+    return 0.0, "BBB not relevant"
+
+
+def rule_toxicity(drug_properties):
+    """Penalty based on toxicity severity."""
+    tox = drug_properties.get("toxicity", 0)
+    score = -0.2 * tox
+    explanation = f"Toxicity penalty: level {tox}"
+    return score, explanation
+
+
+def apply_all_rules(context):
     """
-    Prefer common templates like:
-      Drug -> Target -> Pathway -> Disease
-      Drug -> SimilarDrug -> Target -> Disease
-    This function gives a small boost if path length and types match heuristics.
-    For the prototype, we use path length heuristic: shorter and containing 'Pathway' nodes is better.
+    Combine all PoLo-style rules.
+    context = {
+        'drug_targets': [...],
+        'drug_pathways': [...],
+        'drug_properties': {...},
+        'disease': 'Alzheimers',
+        'disease_genes': [...],
+        'opposite_genes': [...],
+    }
     """
-    # Heuristic: shorter is better; presence of 'Pathway' node (substring) gives boost
-    score = max(0.0, 1.0 - (len(path)-2)*0.15)
-    for node in path:
-        if "pathway" in node.lower() or "path" in node.lower():
-            score += 0.2
-            break
-    return min(score, 1.0)
+    rules = [
+        rule_pathway_overlap(
+            context["drug_pathways"],
+            context["disease_pathways"]
+        ),
+        rule_target_in_disease_genes(
+            context["drug_targets"],
+            context["disease_genes"]
+        ),
+        rule_antagonistic_gene_interactions(
+            context["drug_targets"],
+            context["opposite_genes"]
+        ),
+        rule_bbb_requirement(
+            context["drug_properties"],
+            context["disease"]
+        ),
+        rule_toxicity(
+            context["drug_properties"]
+        ),
+    ]
+
+    total_score = sum(r[0] for r in rules)
+    explanations = [r[1] for r in rules]
+
+    return total_score, explanations
